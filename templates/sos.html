@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHE | SOS</title>
+    <style>
+        :root {
+            --pink: #e91e63;
+            --light-purple: #d1a2ff;
+            --text-color: #000000;
+            --menu-bg: rgba(20, 20, 20, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --highlight: #f9c5ff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(-45deg, var(--pink), #f9c5ff, var(--light-purple), #ffc3e2);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            position: relative;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 390px;
+            height: 844px;
+            border-radius: 40px;
+            background: url('{{ url_for("static", filename="images/bg1.png") }}') no-repeat center center/cover;
+            border: 10px solid #000;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--highlight);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .hamburger {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .sos-btn {
+            width: 100px;
+            height: 100px;
+            background: red;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px red;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .sos-options {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .option-btn {
+            background: var(--pink);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .option-btn:hover {
+            background: var(--light-purple);
+            transform: scale(1.05);
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .nav-item {
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: 0.3s;
+        }
+
+        .nav-item.active {
+            border-bottom: 2px solid var(--pink);
+        }
+
+        .plus-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(to right, var(--pink), var(--light-purple));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px var(--pink);
+            transition: transform 0.3s;
+            margin-top: -30px;
+        }
+
+        .plus-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--pink);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: none;
+            z-index: 999;
+            font-weight: bold;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="phone-frame">
+
+        <!-- Header -->
+        <div class="header">
+            <div class="hamburger" onclick="history.back()">&#9776;</div>
+            <div>SOS</div>
+        </div>
+
+        <!-- SOS Section -->
+        <div class="section">
+            <div class="sos-btn" onclick="toggleOptions()">SOS</div>
+            <div class="sos-options" id="sosOptions" style="display:none;">
+                <button class="option-btn" onclick="shareLocation()">Share Location</button>
+                <button class="option-btn" onclick="callEmergency()">Call Emergency</button>
+                <button class="option-btn" onclick="playSiren()">Play Siren</button>
+                <button class="option-btn" onclick="startRecording()">Start Recording</button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav" id="bottomNav"></div>
+
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">This is a toast message</div>
+
+    <script>
+        let sosVisible = false;
+        let toastElement = document.getElementById('toast');
+        const audio = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
+        audio.preload = 'auto';
+
+        const navItems = [
+            { name: 'Home', url: '/' },
+            { name: 'Past Crime', url: '/pastcrime' },
+            { name: 'Safe Route', url: '/saferoute' },
+            { name: 'Contribute', url: '/contribute' }
+        ];
+
+        function generateNavigation() {
+            const navContainer = document.getElementById('bottomNav');
+            navContainer.innerHTML = '';
+            navItems.forEach((item, index) => {
+                if (index === 2) {
+                    const plusBtn = document.createElement('div');
+                    plusBtn.className = 'plus-btn';
+                    plusBtn.innerText = '+';
+                    plusBtn.onclick = toggleOptions;
+                    navContainer.appendChild(plusBtn);
+                }
+                const div = document.createElement('div');
+                div.className = 'nav-item';
+                div.innerText = item.name;
+                div.onclick = () => location.href = item.url;
+                navContainer.appendChild(div);
+            });
+        }
+
+        function toggleOptions() {
+            const options = document.getElementById('sosOptions');
+            sosVisible = !sosVisible;
+            options.style.display = sosVisible ? 'flex' : 'none';
+        }
+
+        function showToast(message) {
+            toastElement.innerText = message;
+            toastElement.style.display = 'block';
+            toastElement.style.animation = 'none';
+            void toastElement.offsetWidth; // Force reflow
+            toastElement.style.animation = 'fadeInOut 3s forwards';
+        }
+
+        function debounce(func, delay) {
+            let timer;
+            return function () {
+                clearTimeout(timer);
+                timer = setTimeout(func, delay);
+            }
+        }
+
+        const shareLocation = debounce(function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    showToast('Location: ' + position.coords.latitude.toFixed(3) + ', ' + position.coords.longitude.toFixed(3));
+                }, () => {
+                    showToast('Location access denied.');
+                });
+            } else {
+                showToast('Geolocation not supported.');
+            }
+        }, 2000);
+
+        function callEmergency() {
+            window.location.href = 'tel:100';
+        }
+
+        function playSiren() {
+            audio.play();
+            showToast('Siren Activated!');
+        }
+
+        function startRecording() {
+            showToast('Recording feature coming soon.');
+        }
+
+        generateNavigation();
+    </script>
+
+</body>
+
+</html>

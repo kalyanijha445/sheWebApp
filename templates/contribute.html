@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHE | Contribute</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+    <style>
+        :root {
+            --pink: #e91e63;
+            --light-purple: #d1a2ff;
+            --text-color: #000000;
+            --menu-bg: rgba(20, 20, 20, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --highlight: #f9c5ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(-45deg, var(--pink), #f9c5ff, var(--light-purple), #ffc3e2);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 390px;
+            height: 844px;
+            border-radius: 40px;
+            background: url('{{ url_for("static", filename="images/bg1.png") }}') no-repeat center center/cover;
+            border: 10px solid #000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 80px;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--highlight);
+            font-weight: bold;
+            font-size: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .hamburger {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .location-bar {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            color: var(--pink);
+            border-bottom: 1px solid #ccc;
+        }
+
+        .banner-carousel {
+            width: 90%;
+            height: 160px;
+            margin: 15px auto;
+            border-radius: 25px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .banner-slide.active {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(255, 255, 255, 0.7);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .banner-slide img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .banner-slide h2 {
+            font-size: 16px;
+            color: var(--text-color);
+            margin: 0;
+            text-align: center;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .white-box-wrapper {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 15px 10px;
+            margin: 0 20px 20px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #e91e63;
+        }
+
+        .contribution-title {
+            color: #ff9800;
+        }
+
+        input, textarea, select {
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: var(--pink);
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #c2185b;
+        }
+
+        .thank-you {
+            text-align: center;
+            color: green;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.5s ease-in-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .nav-item {
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: 0.3s;
+        }
+
+        .nav-item:hover {
+            color: var(--pink);
+        }
+
+        .nav-item.active {
+            border-bottom: 2px solid var(--pink);
+            color: var(--pink);
+        }
+
+        .plus-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(to right, var(--pink), var(--light-purple));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px var(--pink);
+            transition: transform 0.3s;
+            margin-top: -30px;
+        }
+
+        .plus-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* New Scrollable Map Container */
+        .map-container {
+            width: 90%;
+            height: 300px;
+            margin: 15px auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            pointer-events: auto;
+            touch-action: manipulation;
+        }
+
+        .form-container {
+            display: none;
+            margin: 15px auto;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-container select,
+        .form-container textarea,
+        .form-container button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .form-container button {
+            background: #e91e63;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background: #d81b60;
+        }
+
+        #selected-location {
+            font-size: 14px;
+            margin: 10px auto;
+            text-align: center;
+            color: #e91e63;
+        }
+
+/* Custom Scrollbar for Web App */
+.content::-webkit-scrollbar {
+    width: 8px;        /* Very thin */
+    height: 5px;       /* Super slim horizontal scrollbar */
+}
+
+.content::-webkit-scrollbar-track {
+    background: transparent; 
+    border-radius: 10px;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: rgba(233, 30, 99, 0.5); /* Lighter pink */
+    border-radius: 10px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(233, 30, 99, 0.8);
+}
+
+/* Smooth Scrolling */
+.content {
+    scroll-behavior: smooth;
+    max-height: 720px;    /* Reduced height to keep it compact */
+    overflow-y: auto;
+}
+
+
+    </style>
+</head>
+
+<body>
+
+    <div class="phone-frame">
+
+        <div class="content">
+
+            <div class="header">
+                <div class="hamburger" onclick="history.back()">&#9776;</div>
+                <div>Contribute</div>
+            </div>
+
+            <div class="location-bar">
+                Your Location: New Delhi, India
+            </div>
+
+            <div class="banner-carousel">
+                <div class="banner-slide active">
+                    <img src="{{ url_for('static', filename='images/contribute.png') }}" alt="Contribute">
+                    <h2>Report Safe or Unsafe Areas</h2>
+                </div>
+            </div>
+
+            <div class="white-box-wrapper">
+                <div class="section-title contribution-title">Add Your Contribution</div>
+
+                <div id="thankYouMsg" class="thank-you" style="display: none;">
+                    ✅ Thank you for your contribution!
+                </div>
+
+                <div class="section-title">Report Unsafe Areas 📍</div>
+
+                <!-- Scrollable Map -->
+                <div class="map-container">
+                    <div id="map"></div>
+                </div>
+
+                <p id="selected-location">No location selected.</p>
+
+                <div class="form-container" id="form-container">
+                    <h3>📢 Describe the Issue</h3>
+
+                    <select id="issue-type">
+                        <option value="Harassment">Harassment</option>
+                        <option value="Poor Lighting">Poor Lighting</option>
+                        <option value="No Security">No Security</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <textarea id="description" placeholder="Add more details..." rows="3"></textarea>
+
+                    <button onclick="submitLocation()">🚀 Submit Report</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="location.href='/'">Home</div>
+            <div class="nav-item" onclick="location.href='/pastcrime'">Past Crime</div>
+            <div class="plus-btn" onclick="alert('Quick SOS Coming Soon!')">+</div>
+            <div class="nav-item" onclick="location.href='/saferoute'">Safe Route</div>
+            <div class="nav-item active" onclick="location.href='/contribute'">Contribute</div>
+        </div>
+
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script>
+        var map = L.map('map').setView([28.6139, 77.2090], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker;
+        var selectedLatLng = null;
+
+        map.on('click', function (e) {
+            if (marker) { map.removeLayer(marker); }
+            marker = L.marker(e.latlng).addTo(map);
+            selectedLatLng = e.latlng;
+            document.getElementById("selected-location").innerHTML = "📍 Selected Location: " + e.latlng.lat.toFixed(5) + ", " + e.latlng.lng.toFixed(5);
+            document.getElementById("form-container").style.display = "block";
+        });
+
+        function submitLocation() {
+            if (selectedLatLng) {
+                document.getElementById("thankYouMsg").style.display = "block";
+                document.getElementById("form-container").style.display = "none";
+                document.getElementById("selected-location").innerHTML = "No location selected.";
+
+                if (marker) { map.removeLayer(marker); }
+
+                marker = null;
+                selectedLatLng = null;
+
+                setTimeout(() => {
+                    document.getElementById("thankYouMsg").style.display = "none";
+                }, 3000);
+            } else {
+                alert("⚠ Please select a location first!");
+            }
+        }
+    </script>
+
+</body>
+
+</html>

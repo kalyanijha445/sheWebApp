@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SHE | Splash</title>
+    <style>
+        :root {
+            --pink: #e91e63;
+            --light-purple: #d1a2ff;
+            --text-color: #b3006f;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(-45deg, var(--pink), #f9c5ff, var(--light-purple), #ffc3e2);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 390px;
+            height: 844px;
+            border-radius: 40px;
+            background: url('{{ url_for("static", filename="images/bg2.png") }}') no-repeat center center/cover;
+            border: 10px solid #000;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(233, 30, 99, 0.3);
+            position: relative;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .phone-frame:hover {
+            transform: scale(1.02) translateY(-15px);
+            box-shadow: 0 25px 60px rgba(233, 30, 99, 0.6), 0 0 30px rgba(209, 162, 255, 0.4);
+        }
+
+        .screen {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.7s ease;
+        }
+
+        .screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .white-box {
+            background: rgba(240, 233, 233, 0.812);
+            border-radius: 25px;
+            padding: 30px 20px;
+            width: 80%;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: slideUp 0.8s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .screen img {
+            width: 60%;
+            max-width: 180px;
+            margin-bottom: 20px;
+            animation: bounceIn 1s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        h1 {
+            font-size: 28px;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            font-weight: 900;
+            letter-spacing: 0.8px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 14px;
+            line-height: 1.6;
+            font-weight: 600;
+        }
+
+        .btn {
+            width: 70%;
+            max-width: 220px;
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 22px;
+            background: linear-gradient(to right, var(--pink), var(--light-purple));
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 10px 24px rgba(233, 30, 99, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05) translateY(-4px);
+            box-shadow: 0 15px 30px rgba(233, 30, 99, 0.6);
+        }
+
+        .dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            margin: 0 4px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .dot.active {
+            background-color: var(--pink);
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="phone-frame">
+
+        <!-- Slide 1 -->
+        <div class="screen active" id="screen1">
+            <div class="white-box">
+                <img src="{{ url_for('static', filename='images/logo1.png') }}" alt="SHE Logo">
+                <h1>Welcome to SHE</h1>
+                <p><b>SHE</b> ~ Save Her Everywhere</p>
+                <p>A safe space. A strong voice. A powerful movement.<br><b>Together, we rise to protect, support, and empower women everywhere.</b></p>
+                <button class="btn" onclick="next()">Let’s Begin</button>
+                <div class="dots">
+                    <span class="dot active" id="dot1"></span>
+                    <span class="dot" id="dot2"></span>
+                    <span class="dot" id="dot3"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="screen" id="screen2">
+            <div class="white-box">
+                <img src="{{ url_for('static', filename='images/power.png') }}" alt="Knowledge">
+                <h1>Knowledge Empowers</h1>
+                <p><b>Understand your rights. Know your worth.</b><br><b>Build the courage to lead, to speak, to choose.</b></p>
+                <button class="btn" onclick="next()">Next</button>
+                <div class="dots">
+                    <span class="dot" id="dot1"></span>
+                    <span class="dot active" id="dot2"></span>
+                    <span class="dot" id="dot3"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="screen" id="screen3">
+            <div class="white-box">
+                <img src="{{ url_for('static', filename='images/safety.png') }}" alt="Safety">
+                <h1>Your Safety. Your Power.</h1>
+                <p><b>One tap SOS. Real-time alerts. Trusted contacts.</b><br><b>SHE puts your safety in your hands—anytime, anywhere.</b></p>
+                <button class="btn" onclick="startApp()">Get Started</button>
+                <div class="dots">
+                    <span class="dot" id="dot1"></span>
+                    <span class="dot" id="dot2"></span>
+                    <span class="dot active" id="dot3"></span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let current = 1;
+        const totalScreens = 3;
+
+        function next() {
+            const currentScreen = document.getElementById(`screen${current}`);
+            const currentDot = document.getElementById(`dot${current}`);
+
+            currentScreen.classList.remove('active');
+            currentDot.classList.remove('active');
+
+            current++;
+            if (current > totalScreens) current = totalScreens;
+
+            const nextScreen = document.getElementById(`screen${current}`);
+            const nextDot = document.getElementById(`dot${current}`);
+
+            nextScreen.classList.add('active');
+            nextDot.classList.add('active');
+        }
+
+        function startApp() {
+            window.location.href = "/login";
+        }
+    </script>
+
+</body>
+
+</html>

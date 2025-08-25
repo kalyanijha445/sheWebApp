@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHE | Past Crime</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --pink: #e91e63;
+            --light-purple: #d1a2ff;
+            --text-color: #000000;
+            --menu-bg: rgba(20, 20, 20, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --highlight: #f9c5ff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(-45deg, var(--pink), #f9c5ff, var(--light-purple), #ffc3e2);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 390px;
+            height: 844px;
+            border-radius: 40px;
+            border: 10px solid #000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            background: url('{{ url_for("static", filename="images/bg.png") }}') no-repeat center center/cover;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--highlight);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .hamburger {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .location-bar {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            color: var(--pink);
+            border-bottom: 1px solid #ccc;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .filter-buttons button {
+            background-color: var(--pink);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .filter-buttons button:hover {
+            background-color: var(--light-purple);
+        }
+
+        .map-container {
+            flex: 1;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+            padding: 10px;
+        }
+
+        #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .legend {
+            margin-top: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .legend div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .legend span {
+            width: 15px;
+            height: 15px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .nav-item {
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: 0.3s;
+        }
+
+        .nav-item.active {
+            border-bottom: 2px solid var(--pink);
+        }
+
+        .plus-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(to right, var(--pink), var(--light-purple));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px var(--pink);
+            transition: transform 0.3s;
+            margin-top: -30px;
+        }
+
+        .plus-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .map-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .map-container::-webkit-scrollbar-thumb {
+            background-color: var(--pink);
+            border-radius: 10px;
+        }
+
+        .map-container::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="phone-frame">
+
+        <div class="header">
+            <div class="hamburger" onclick="history.back()">&#9776;</div>
+            <div>Past Crime</div>
+        </div>
+
+        <div class="location-bar">
+            Your Location: New Delhi, India
+        </div>
+
+        <div class="filter-buttons">
+            <button onclick="filterCrime('all')">All</button>
+            <button onclick="filterCrime('high')">High</button>
+            <button onclick="filterCrime('medium')">Medium</button>
+            <button onclick="filterCrime('low')">Low</button>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+
+            <div class="legend">
+                <strong>Crime Severity:</strong>
+                <div><span style="background: red;"></span> High Risk</div>
+                <div><span style="background: yellow;"></span> Medium Risk</div>
+                <div><span style="background: green;"></span> Low Risk</div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="location.href='/'">Home</div>
+            <div class="nav-item active" onclick="location.href='/pastcrime'">Past Crime</div>
+            <div class="plus-btn" onclick="alert('Quick SOS Coming Soon!')">+</div>
+            <div class="nav-item" onclick="location.href='/saferoute'">Safe Route</div>
+            <div class="nav-item" onclick="location.href='/contribute'">Contribute</div>
+        </div>
+
+    </div>
+
+    <script>
+        var crimeMap = L.map('map').setView([28.6139, 77.2090], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(crimeMap);
+
+        var crimeSpots = [
+            { lat: 28.6353, lng: 77.2250, desc: "Robbery - 10 cases", level: "high" },
+            { lat: 28.6129, lng: 77.2310, desc: "Assault - 5 cases", level: "medium" },
+            { lat: 28.5806, lng: 77.2105, desc: "Burglary - 2 cases", level: "low" },
+            { lat: 28.6500, lng: 77.2370, desc: "Pickpocketing - 8 cases", level: "medium" },
+            { lat: 28.7000, lng: 77.2500, desc: "Chain Snatching - 12 cases", level: "high" },
+            { lat: 28.6700, lng: 77.2900, desc: "Harassment - 6 cases", level: "medium" },
+            { lat: 28.5600, lng: 77.2200, desc: "Car Theft - 3 cases", level: "low" }
+        ];
+
+        var markers = [];
+
+        function getColor(level) {
+            return level === "high" ? "red" : level === "medium" ? "yellow" : "green";
+        }
+
+        function plotCrimeData(filter) {
+            markers.forEach(marker => crimeMap.removeLayer(marker));
+            markers = [];
+
+            crimeSpots.forEach(crime => {
+                if (filter === 'all' || crime.level === filter) {
+                    var marker = L.circle([crime.lat, crime.lng], {
+                        color: getColor(crime.level),
+                        fillColor: getColor(crime.level),
+                        fillOpacity: 0.5,
+                        radius: 500
+                    }).addTo(crimeMap).bindPopup(`<b>${crime.desc}</b>`);
+                    markers.push(marker);
+                }
+            });
+        }
+
+        function filterCrime(level) {
+            plotCrimeData(level);
+        }
+
+        plotCrimeData('all');
+    </script>
+
+</body>
+
+</html>

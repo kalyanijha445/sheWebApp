@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHE | Chatbot</title>
+    <style>
+        /* SAME STYLES FROM HOME PAGE */
+        :root {
+            --pink: #e91e63;
+            --light-purple: #d1a2ff;
+            --text-color: #000000;
+            --menu-bg: rgba(20, 20, 20, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --highlight: #f9c5ff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(-45deg, var(--pink), #f9c5ff, var(--light-purple), #ffc3e2);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 390px;
+            height: 844px;
+            border-radius: 40px;
+            background: url('{{ url_for("static", filename="images/bg1.png") }}') no-repeat center center/cover;
+            border: 10px solid #000;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-menu {
+            position: absolute;
+            top: 0;
+            left: -250px;
+            width: 220px;
+            height: 100%;
+            background: var(--menu-bg);
+            padding: 40px 20px;
+            transition: 0.3s ease;
+            z-index: 10;
+            border-top-right-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+
+        .side-menu.active { left: 0; }
+
+        .side-menu a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .side-menu a:hover { color: var(--pink); }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--highlight);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .hamburger {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth;
+        }
+
+        .chat-message {
+            max-width: 70%;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--pink);
+            color: white;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background-color: white;
+            color: black;
+        }
+
+        .input-container {
+            display: flex;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .input-container input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .input-container button {
+            background: var(--pink);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .nav-item {
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: 0.3s;
+        }
+
+        .nav-item.active {
+            border-bottom: 2px solid var(--pink);
+        }
+
+        .plus-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(to right, var(--pink), var(--light-purple));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px var(--pink);
+            transition: transform 0.3s;
+            margin-top: -30px;
+        }
+
+        .plus-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background-color: var(--pink);
+            border-radius: 10px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="phone-frame">
+
+        <!-- Hamburger Menu -->
+        <div id="menu" class="side-menu">
+            <div class="close-btn" onclick="toggleMenu()">&#10006;</div>
+            <a href="/sos">SOS</a>
+            <a href="/saferoute">Safe Route</a>
+            <a href="/pastcrime">Past Crime</a>
+            <a href="/contribute">Contribute</a>
+            <a href="/chatbot">Ai-Chatbot</a>
+            <a href="/profile">Profile</a>
+            <a href="/setting">Settings</a>
+            <form method="POST" action="/logout">
+                <button type="submit" style="background:none; border:none; color:white; font-size:16px; cursor:pointer;">Logout</button>
+            </form>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="hamburger" onclick="toggleMenu()">&#9776;</div>
+            <div>Chatbot</div>
+        </div>
+
+        <!-- Chat Content -->
+        <div class="chat-container" id="chat-container">
+            <div class="bot-message chat-message">Hi! I am SHE Assistant. How can I help you today?</div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="location.href='/'">Home</div>
+            <div class="nav-item" onclick="location.href='/pastcrime'">Past Crime</div>
+            <div class="plus-btn" onclick="location.href='/sos'">+</div>
+            <div class="nav-item" onclick="location.href='/saferoute'">Safe Route</div>
+            <div class="nav-item" onclick="location.href='/contribute'">Contribute</div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('menu').classList.toggle('active');
+        }
+
+        function sendMessage() {
+            var input = document.getElementById('user-input');
+            var chatContainer = document.getElementById('chat-container');
+
+            if (input.value.trim() === '') return;
+
+            var userMessage = document.createElement('div');
+            userMessage.classList.add('chat-message', 'user-message');
+            userMessage.innerText = input.value;
+            chatContainer.appendChild(userMessage);
+
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            setTimeout(() => {
+                var botMessage = document.createElement('div');
+                botMessage.classList.add('chat-message', 'bot-message');
+
+                let userText = input.value.toLowerCase();
+                if (userText.includes('safe route')) {
+                    botMessage.innerText = 'You can find the safest routes in the "Safe Route" section.';
+                } else if (userText.includes('past crime')) {
+                    botMessage.innerText = 'You can check past crime spots in the "Past Crime" section.';
+                } else if (userText.includes('sos')) {
+                    botMessage.innerText = 'Press the SOS button anytime for quick help.';
+                } else if (userText.includes('hi') || userText.includes('hello')) {
+                    botMessage.innerText = 'Hello! How can I assist you today?';
+                } else {
+                    botMessage.innerText = 'Thank you for reaching out. Please explore our app for more features!';
+                }
+
+                chatContainer.appendChild(botMessage);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            }, 500);
+
+            input.value = '';
+        }
+    </script>
+
+</body>
+
+</html>

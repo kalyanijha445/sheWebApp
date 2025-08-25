@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHE | Settings</title>
+    <style>
+        :root {
+            --pink: #e91e63;
+            --light-purple: #d1a2ff;
+            --text-color: #000000;
+            --menu-bg: rgba(20, 20, 20, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --highlight: #f9c5ff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(-45deg, var(--pink), #f9c5ff, var(--light-purple), #ffc3e2);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 390px;
+            height: 844px;
+            border-radius: 40px;
+            background: url('{{ url_for("static", filename="images/bg1.png") }}') no-repeat center center/cover;
+            border: 10px solid #000;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-menu {
+            position: absolute;
+            top: 0;
+            left: -250px;
+            width: 220px;
+            height: 100%;
+            background: var(--menu-bg);
+            padding: 40px 20px;
+            transition: 0.3s ease;
+            z-index: 10;
+            border-top-right-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+
+        .side-menu.active { left: 0; }
+
+        .side-menu a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .side-menu a:hover { color: var(--pink); }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--highlight);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .hamburger {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .settings-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .settings-section {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .settings-section h3 {
+            margin: 0 0 10px 0;
+            color: var(--pink);
+            font-size: 18px;
+        }
+
+        .settings-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .settings-option label {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .settings-option input {
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .nav-item {
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: 0.3s;
+        }
+
+        .nav-item.active {
+            border-bottom: 2px solid var(--pink);
+        }
+
+        .plus-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(to right, var(--pink), var(--light-purple));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px var(--pink);
+            transition: transform 0.3s;
+            margin-top: -30px;
+        }
+
+        .plus-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .settings-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .settings-container::-webkit-scrollbar-thumb {
+            background-color: var(--pink);
+            border-radius: 10px;
+        }
+
+        .settings-container::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="phone-frame">
+
+        <!-- Hamburger Menu -->
+        <div id="menu" class="side-menu">
+            <div class="close-btn" onclick="toggleMenu()">&#10006;</div>
+            <a href="/sos">SOS</a>
+            <a href="/saferoute">Safe Route</a>
+            <a href="/pastcrime">Past Crime</a>
+            <a href="/contribute">Contribute</a>
+            <a href="/chatbot">Ai-Chatbot</a>
+            <a href="/profile">Profile</a>
+            <a href="/setting">Settings</a>
+            <form method="POST" action="/logout">
+                <button type="submit" style="background:none; border:none; color:white; font-size:16px; cursor:pointer;">Logout</button>
+            </form>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="hamburger" onclick="toggleMenu()">&#9776;</div>
+            <div>Settings</div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="settings-container">
+
+            <div class="settings-section">
+                <h3>Notifications</h3>
+                <div class="settings-option">
+                    <label for="crimeAlerts">Crime Alerts</label>
+                    <input type="checkbox" id="crimeAlerts" checked>
+                </div>
+                <div class="settings-option">
+                    <label for="safeRouteUpdates">Safe Route Updates</label>
+                    <input type="checkbox" id="safeRouteUpdates">
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Preferences</h3>
+                <div class="settings-option">
+                    <label for="darkMode">Dark Mode</label>
+                    <input type="checkbox" id="darkMode">
+                </div>
+                <div class="settings-option">
+                    <label for="locationAccess">Location Access</label>
+                    <input type="checkbox" id="locationAccess" checked>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="location.href='/'">Home</div>
+            <div class="nav-item" onclick="location.href='/pastcrime'">Past Crime</div>
+            <div class="plus-btn" onclick="alert('Quick SOS Coming Soon!')">+</div>
+            <div class="nav-item" onclick="location.href='/saferoute'">Safe Route</div>
+            <div class="nav-item" onclick="location.href='/contribute'">Contribute</div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('menu').classList.toggle('active');
+        }
+    </script>
+
+</body>
+
+</html>

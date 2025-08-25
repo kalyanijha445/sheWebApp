@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHE | Home</title>
+    <style>
+        :root {
+            --pink: #e91e63;
+            --light-purple: #d1a2ff;
+            --text-color: #000000;
+            --menu-bg: rgba(20, 20, 20, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --highlight: #f9c5ff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(-45deg, var(--pink), #f9c5ff, var(--light-purple), #ffc3e2);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 390px;
+            height: 844px;
+            border-radius: 40px;
+            background: url('{{ url_for("static", filename="images/bg1.png") }}') no-repeat center center/cover;
+            border: 10px solid #000;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Hamburger Menu */
+        .side-menu {
+            position: absolute;
+            top: 0;
+            left: -250px;
+            width: 220px;
+            height: 100%;
+            background: var(--menu-bg);
+            padding: 40px 20px;
+            transition: 0.3s ease;
+            z-index: 10;
+            border-top-right-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+
+        .side-menu.active { left: 0; }
+
+        .side-menu a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .side-menu a:hover { color: var(--pink); }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--highlight);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .hamburger {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        /* Location Bar */
+        .location-bar {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            color: var(--pink);
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* Banner Carousel */
+        .banner-carousel {
+            width: 90%;
+            height: 160px;
+            margin: 15px auto;
+            border-radius: 25px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .banner-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .banner-slide.active {
+            display: block;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .banner-content {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-radius: 25px;
+        }
+
+        .banner-content img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .banner-content h2 {
+            font-size: 16px;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Dots */
+        .dots {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .dots span {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin: 0 4px;
+            background: #ccc;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dots span.active {
+            background: var(--pink);
+        }
+
+        /* Search Section */
+        .search-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 15px;
+            margin: 15px 20px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 25px 0 0 25px;
+            font-size: 14px;
+            outline: none;
+            background: transparent;
+        }
+
+        .mic-btn {
+            background: var(--pink);
+            border: none;
+            border-radius: 0 25px 25px 0;
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mic-btn img {
+            width: 20px;
+            height: 20px;
+            filter: invert(1);
+        }
+
+        /* White Box Wrapper */
+        .white-box-wrapper {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 15px 10px;
+            margin: 0 20px 20px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--pink);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .white-boxes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 15px;
+        }
+
+        .white-box {
+            width: 40%;
+            background: white;
+            border-radius: 15px;
+            padding: 15px 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .white-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .white-box img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 8px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .nav-item {
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: 0.3s;
+        }
+
+        .nav-item.active {
+            border-bottom: 2px solid var(--pink);
+        }
+
+        .plus-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(to right, var(--pink), var(--light-purple));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px var(--pink);
+            transition: transform 0.3s;
+            margin-top: -30px;
+        }
+
+        .plus-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="phone-frame">
+
+        <!-- Hamburger Menu -->
+        <div id="menu" class="side-menu">
+            <div class="close-btn" onclick="toggleMenu()">&#10006;</div>
+            <a href="/sos">SOS</a>
+            <a href="/saferoute">Safe Route</a>
+            <a href="/pastcrime">Past Crime</a>
+            <a href="/contribute">Contribute</a>
+            <a href="/chatbot">Ai-Chatbot</a>
+            <a href="/profile">Profile</a>
+            <a href="/setting">Settings</a>
+            <form method="POST" action="/logout">
+                <button type="submit" style="background:none; border:none; color:white; font-size:16px; cursor:pointer;">Logout</button>
+            </form>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="hamburger" onclick="toggleMenu()">&#9776;</div>
+            <div>Welcome, {{ username }}</div>
+             <!-- <h2>Welcome, {{ username }}</h2> -->
+                <!-- {% if session.name %}
+                    <p>Hello, {{ session.name }} (Google user)</p>
+                {% endif %}
+                <img src="{{ session.picture }}" width="80" /> -->
+
+        </div>
+
+        <!-- Location -->
+        <div class="location-bar">
+            Your Location: New Delhi, India
+        </div>
+
+        <!-- Banner Carousel -->
+        <div class="banner-carousel">
+            <div class="banner-slide active">
+                <div class="banner-content">
+                    <img src="{{ url_for('static', filename='images/she_banner1.png') }}" alt="Banner 1">
+                    <h2>She ~ Save Her Everywhere</h2>
+                </div>
+            </div>
+            <div class="banner-slide">
+                <div class="banner-content">
+                    <img src="{{ url_for('static', filename='images/she_banner2.png') }}" alt="Banner 2">
+                    <h2>Check Past Crime</h2>
+                </div>
+            </div>
+            <div class="banner-slide">
+                <div class="banner-content">
+                    <img src="{{ url_for('static', filename='images/she_banner3.png') }}" alt="Banner 3">
+                    <h2>Contribute</h2>
+                </div>
+            </div>
+            <div class="banner-slide">
+                <div class="banner-content">
+                    <img src="{{ url_for('static', filename='images/she_banner4.png') }}" alt="Banner 4">
+                    <h2>Safest Route</h2>
+                </div>
+            </div>
+
+            <div class="dots" id="dots"></div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-section">
+            <input type="text" class="search-input" placeholder="Search here...">
+            <button class="mic-btn">
+                <img src="{{ url_for('static', filename='images/mic.png') }}" alt="Mic" />
+            </button>
+        </div>
+
+        <!-- White Box Content -->
+        <div class="white-box-wrapper">
+
+            <div class="section-title">
+                SHE Features
+            </div>
+
+            <div class="white-boxes">
+
+                <div class="white-box" onclick="location.href='/pastcrime'">
+                    <img src="{{ url_for('static', filename='images/past_crime.png') }}" alt="Past Crime">
+                    <div>Past Crime</div>
+                </div>
+
+                <div class="white-box" onclick="location.href='/saferoute'">
+                    <img src="{{ url_for('static', filename='images/safe_route.png') }}" alt="Safe Route">
+                    <div>Safe Route</div>
+                </div>
+
+                <div class="white-box" onclick="location.href='/contribute'">
+                    <img src="{{ url_for('static', filename='images/contribute.png') }}" alt="Contribute">
+                    <div>Contribute</div>
+                </div>
+
+                <div class="white-box" onclick="location.href='/sos'">
+                    <img src="{{ url_for('static', filename='images/sos.png') }}" alt="SOS">
+                    <div>SOS</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="location.href='/'">Home</div>
+            <div class="nav-item" onclick="location.href='/pastcrime'">Past Crime</div>
+            <div class="plus-btn" onclick="alert('Quick SOS Coming Soon!')">+</div>
+            <div class="nav-item" onclick="location.href='/saferoute'">Safe Route</div>
+            <div class="nav-item" onclick="location.href='/contribute'">Contribute</div>
+        </div>
+
+    </div>
+
+
+    <script>
+        let slideIndex = 0;
+        const slides = document.querySelectorAll('.banner-slide');
+        const dotsContainer = document.getElementById('dots');
+
+        slides.forEach((_, i) => {
+            const dot = document.createElement('span');
+            dot.onclick = () => showSlide(i);
+            dotsContainer.appendChild(dot);
+        });
+
+        const dots = dotsContainer.querySelectorAll('span');
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+            slideIndex = index;
+        }
+
+        function nextSlide() {
+            slideIndex = (slideIndex + 1) % slides.length;
+            showSlide(slideIndex);
+        }
+
+        showSlide(slideIndex);
+        setInterval(nextSlide, 3000);
+
+        function toggleMenu() {
+            document.getElementById('menu').classList.toggle('active');
+        }
+
+        function setActive(element) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+    </script>
+
+</body>
+
+</html>
